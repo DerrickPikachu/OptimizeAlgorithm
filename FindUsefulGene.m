@@ -31,7 +31,7 @@ function validData = findGene(geneSeq)
             if checkEnd(buffer, endGenes)
                 data = data(1 : strlength(data) - 3);
                 validFlag = false;
-                if size(data) % 3 == 0
+                if mod(strlength(data), 3) == 0
                     validData = [validData, convertCharsToStrings(data)];
                 end
                 data = '';
