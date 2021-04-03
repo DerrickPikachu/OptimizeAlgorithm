@@ -37,10 +37,7 @@ classdef Gene
             str = append(zeroAppend, str);
         end
         
-        function v = toValue(obj, gene, offset)
-            tem = bin2dec(gene);
-            v = (tem / obj.shift) - offset;
-        end
+        function v = toValue(obj, gene, )
         
         function str = encode(obj)
             % Encode hole gene sequence
@@ -49,12 +46,10 @@ classdef Gene
             str = append(geneX, geneY);
         end
         
-        function [x, y] = decode(obj)
-            % Decode hole gene sequence
-            geneX = obj.geneStr(1: obj.geneLen);
-            geneY = obj.geneStr(obj.geneLen + 1: obj.geneLen * 2);
-            x = obj.toValue(geneX, obj.offsetX);
-            y = obj.toValue(geneY, obj.offsetY);
+        function v = decode(obj)
+            geneX = obj.geneStr(0:obj.geneLen - 1);
+            geneY = obj.geneStr(obj.geneLen:obj.geneLen * 2 - 1);
+            
         end
     end
 end
