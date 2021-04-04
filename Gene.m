@@ -6,23 +6,37 @@ classdef Gene
         valueX
         valueY
         geneStr
+        isValid
     end
     properties (Constant)
         geneLen = 13;
         shift = 1000;
         offsetX = 1.5;
         offsetY = 3;
+        upperBoundX = 4;
+        lowerBoundX = -1.5;
+        upperBoundY = 3;
+        lowerBoundY = -3;
     end
     
     methods
+        %  The constructor
         function obj = Gene(x, y)
             %GENE Construct an instance of this class
             %   Detailed explanation goes here
             obj.valueX = x;
             obj.valueY = y;
             obj.geneStr = encode(obj);
+            obj.isValid = obj.setValid();
         end
         
+        function obj = setGene(obj, sequence)
+            obj.geneStr = sequence;
+            [obj.valueX, obj.valueY] = obj.decode();
+            obj.isValid = obj.setValid();
+        end
+        
+        % The helper function
         function str = toGene(obj, value, offset)
             tem = value + offset;
             tem = int32(tem * obj.shift);
@@ -42,6 +56,12 @@ classdef Gene
             v = (tem / obj.shift) - offset;
         end
         
+        function valid = setValid(obj)
+            % Boundary Check
+            valid = (obj.valueX >= obj.lowerBoundX && obj.valueX <= obj.upperBoundX && obj.valueY >= obj.lowerBoundY && obj.valueY <= obj.upperBoundY);
+        end
+        
+        % Public methods
         function str = encode(obj)
             % Encode hole gene sequence
             geneX = obj.toGene(obj.valueX, obj.offsetX);
