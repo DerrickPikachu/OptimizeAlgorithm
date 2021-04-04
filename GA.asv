@@ -2,6 +2,7 @@ classdef GA
     
     properties
         genes
+        
     end
     properties(Constant)
         upperBoundX = 4;
@@ -12,12 +13,13 @@ classdef GA
     
     methods
         
-        function obj = GA(amount)
+        function obj = init(obj, amount)
+            xValue = zeros(1, amount);
+            yValue = zeros(1, amount);
+            
             for i = 1 : amount
-                x = obj.getRand(obj.lowerBoundX, obj.upperBoundX);
-                y = obj.getRand(obj.lowerBoundY, obj.upperBoundY);
-                gene = Gene(x, y, obj.lowerBoundX, obj.upperBoundX, obj.lowerBoundY, obj.upperBoundY);
-                obj.genes = [obj.genes, gene];
+                xValue(i) = randNum(lowerBoundX, upperBoundX);
+                yValue(i) = randNum (lowerBoundY, 
             end
         end
         
@@ -25,7 +27,6 @@ classdef GA
         function randNum = getRand(~, lowerBound, upperBound)
             range = upperBound - lowerBound;
             randNum = floor(rand * range * 1000) / 1000;
-            randNum = randNum + lowerBound;
         end
         
         function gene = fit(obj)

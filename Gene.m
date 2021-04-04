@@ -1,32 +1,40 @@
 classdef Gene
-    %GENE Summary of this class goes here
-    %   Detailed explanation goes here
+    % When using Gene, be careful to check the valid state.
     
     properties
         valueX
         valueY
         geneStr
         isValid
+        upperBoundX
+        lowerBoundX
+        upperBoundY
+        lowerBoundY
+        offsetX
+        offsetY
     end
     properties (Constant)
         geneLen = 13;
         shift = 1000;
-        offsetX = 1.5;
-        offsetY = 3;
-        upperBoundX = 4;
-        lowerBoundX = -1.5;
-        upperBoundY = 3;
-        lowerBoundY = -3;
     end
     
     methods
         %  The constructor
-        function obj = Gene(x, y)
-            %GENE Construct an instance of this class
-            %   Detailed explanation goes here
+        function obj = Gene(x, y, lbx, ubx, lby, uby)
+            % Object value init
             obj.valueX = x;
             obj.valueY = y;
+            obj.lowerBoundX = lbx;
+            obj.upperBoundX = ubx;
+            obj.lowerBoundY = lby;
+            obj.upperBoundY = uby;
+            obj.offsetX = -lbx;
+            obj.offsetY = -lby;
+            
+            % Setup corresponding gene sequence
             obj.geneStr = encode(obj);
+            
+            % Set the valid flag
             obj.isValid = obj.setValid();
         end
         

@@ -1,37 +1,45 @@
 classdef Gene
-    %GENE Summary of this class goes here
-    %   Detailed explanation goes here
+    % When using Gene, be careful to check the valid state.
     
     properties
         valueX
         valueY
         geneStr
         isValid
+        upperBoundX
+        lowerBoundX
+        upperBoundY
+        lowerBoundY
     end
     properties (Constant)
         geneLen = 13;
         shift = 1000;
         offsetX = 1.5;
         offsetY = 3;
-        upperBoundX = 4;
-        lowerBoundX = -1.5;
-        upperBoundY = 3;
-        lowerBoundY = -3;
     end
     
     methods
         %  The constructor
-        function obj = Gene(x, y)
-            %GENE Construct an instance of this class
-            %   Detailed explanation goes here
+        function obj = Gene(x, y, lbx, ubx, lby, uby)
+            % Object value init
             obj.valueX = x;
             obj.valueY = y;
+            obj.lowerBoundX = lbx;
+            obj.upperBoundX = ubx;
+            obj.lowerBoundY = lby;
+            obj.upperBoundY = uby;
+            
+            % Setup corresponding gene sequence
             obj.geneStr = encode(obj);
+            
+            % 
+            obj.isValid = obj.setValid();
         end
         
         function obj = setGene(obj, sequence)
             obj.geneStr = sequence;
             [obj.valueX, obj.valueY] = obj.decode();
+            obj.isValid = obj.setValid();
         end
         
         % The helper function
@@ -55,8 +63,8 @@ classdef Gene
         end
         
         function valid = setValid(obj)
-            valid = (obj.valueX >= obj.lowerBoundX && obj.valueX <= obj.upperBoundX &&
-            obj.valueY >= obj.lowerBoundY && obj.valueY <= obj.upperBoundY);
+            % Boundary Check
+            valid = (obj.valueX >= obj.lowerBoundX && obj.valueX <= obj.upperBoundX && obj.valueY >= obj.lowerBoundY && obj.valueY <= obj.upperBoundY);
         end
         
         % Public methods
