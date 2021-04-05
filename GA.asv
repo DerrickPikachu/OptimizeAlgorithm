@@ -9,7 +9,11 @@ classdef GA
         lowerBoundX = -1.5;
         upperBoundY = 3;
         lowerBoundY = -3;
-        distribution = 70;
+        distribution = 70; % persentage
+        survived = 0.75; % probability
+        crossOverRate = 0.80; % probability
+        mutationRate = 0.20; % probability
+        terminalDiff = 0.5;
     end
     
     methods
@@ -73,6 +77,9 @@ classdef GA
                 end
             end
             
+            fprintf('goods: %d\n', goods);
+            fprintf('bads: %d\n', bads);
+            
             % Choose the gene we need
             half = floor(n / 2);
             if (goods >= half)
@@ -83,28 +90,86 @@ classdef GA
                 selectedBads = sequence(1, bads);
             else
                 selectedGoods = obj.getRandomGene(sequence(half + 1 : n), goods);
-                selectedBads = obj.getRandomGene(sequence(1, half), bads);
+                selectedBads = obj.getRandomGene(sequence(1: half), bads);
             end
             
             selected = [selectedGoods, selectedBads];
         end
         
-        % Public methods
-        function gene = fit(obj)
-            [a, n] = size(obj.genes);
+        function grade = evaluate(obj)
+            [~, n] = size(obj.genes);
             grade = zeros(1, n);
-            
-            % Evaluate all the genes
             for i = 1 : n
                 x = obj.genes(i).valueX;
                 y = obj.genes(i).valueY;
                 grade(i) = obj.evaluateFunction(x, y);
             end
+        end
+        
+        % Public methods
+        function gene = fit(obj)
+            previousScore = 0;
+            score = 0;
+            terminalCounter = 0;
+            generation = 0;
             
-            % Sort the value by grade
-            [grade, I] = sort(grade);
-            obj.genes = Y(I);
+            % Evaluate all genes first
+            grade = obj.evaluate();
+            previousScore = max(grade);
             
+            while (terminalCounter < 10)
+                % Sort the value by grade
+                [~, I] = sort(grade);
+                obj.genes = Y(I);
+
+                % Select the survived gene
+                selected = obj.select(n, floor(obj.survived * n));
+                [~, geneSize] = size(selected);
+                original = obj.genes;
+                obj.genes = [];
+                for i = 1 : geneSize
+                    obj.genes = [obj.genes, original(selected(i))];
+                end
+
+                % Cross over
+                [~, n] = size(obj.genes);
+                if (mod(n, 2) ~= 0)
+                    n = n - 1;
+                end
+                child = [];
+                for i = 1 : 2 : n
+                    if (rand < obj.crossOverRate)
+                        [c1, c2] = crossOver(obj.genes(i), obj.genes(i + 1));
+                        if (c1.isValid)
+                            child = [child, c1];
+                        end
+                        if (c2.isValid)
+                            child = [child, c2];
+                        end
+                    end
+                end
+                obj.genes = [obj.genes, child];
+
+                % Mutation
+                [~, n] = size(obj.genes);
+                for i = 1 : n
+                    if (rand < obj.mutationRate)
+                        obj.genes(i) = mutation(obj.genes(i));
+                    end
+                end
+                
+                % Evaluate all The genes, and check the terminal
+                grade = obj.evaluate();
+                score = max(grade);
+                if (score - previousScore < obj.terminalDiff)
+                    terminalCounter = terminalCounter + 1;
+                end
+                
+                % Ouput the generation
+                fprintf('generation: %d\n', generation);
+                fprintf('Best Scord: %f\n', score);
+                fprintf('terminal difference: %f\n', 
+            end
             
         end
     end
