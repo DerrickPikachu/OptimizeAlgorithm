@@ -111,10 +111,17 @@ classdef GA
             score = 0;
             terminalCounter = 0;
             generation = 0;
+            graphX = zeros(1, obj.generationLimit + 1);
+            graphY = zeros(1, obj.generationLimit + 1);
+            
+            for i = 1 : obj.generationLimit + 1
+                graphX(i) = i;
+            end
             
             % Evaluate all genes first
             grade = obj.evaluate();
             score = max(grade);
+            graphY(generation + 1) = score;
             
             while (generation < obj.generationLimit)
                 previousScore = score;
@@ -171,6 +178,7 @@ classdef GA
                 grade = obj.evaluate();
                 generation = generation + 1;
                 [score, i] = max(grade);
+                graphY(generation + 1) = score;
                 if (score == previousScore)
                     terminalCounter = terminalCounter + 1;
                 else
@@ -186,6 +194,8 @@ classdef GA
                 fprintf('Best Gene: x = %f, y = %f, valid = %d\n', obj.genes(i).valueX, obj.genes(i).valueY, obj.genes(i).isValid);
                 fprintf('-----------------------------------\n\n');
             end
+            
+            plot(graphX, graphY);
         end
     end
 end

@@ -11,7 +11,7 @@ classdef GA
         mutationRate = 0.30; % probability
         terminateLimit = 3;
         numGeneLimit = 10000;
-        generationLimit = 25;
+        generationLimit = 20;
     end
     
     methods
@@ -111,10 +111,17 @@ classdef GA
             score = 0;
             terminalCounter = 0;
             generation = 0;
+            graphX = zeros(1, obj.generationLimit + 1);
+            graphY = zeros(1, obj.generationLimit + 1);
+            
+            for i = 1 : obj.generationLimit + 1
+                graphX(i) = i;
+            end
             
             % Evaluate all genes first
             grade = obj.evaluate();
             score = max(grade);
+            
             
             while (generation < obj.generationLimit)
                 previousScore = score;
@@ -161,7 +168,9 @@ classdef GA
                 for i = 1 : n
                     if (rand < obj.mutationRate)
                         newGene = mutation(obj.genes(i));
-                        if 
+                        if (newGene.isValid)
+                            obj.genes(i) = newGene;
+                        end
                     end
                 end
                 
@@ -169,6 +178,7 @@ classdef GA
                 grade = obj.evaluate();
                 generation = generation + 1;
                 [score, i] = max(grade);
+                
                 if (score == previousScore)
                     terminalCounter = terminalCounter + 1;
                 else
