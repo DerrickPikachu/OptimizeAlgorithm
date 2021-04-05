@@ -5,18 +5,17 @@ classdef GA
         evaluateFunction
     end
     properties(Constant)
-        upperBoundX = 4;
-        lowerBoundX = -1.5;
-        upperBoundY = 3;
-        lowerBoundY = -3;
         distribution = 70; % persentage
-        survived = 0.75; % probability
-        crossOverRate = 0.80; % probability
-        mutationRate = 0.20; % probability
-        terminalDiff = 0.5;
+        survived = 0.80; % probability
+        crossOverRate = 0.70; % probability
+        mutationRate = 0.30; % probability
+        terminateLimit = 3;
+        numGeneLimit = 10000;
+        generationLimit = 25;
     end
     
     methods
+        % Constructor
         function obj = GA(amount, callBack)
             % Set up the target function
             obj.evaluateFunction = callBack;
@@ -28,9 +27,9 @@ classdef GA
             
             % Init the genes
             for i = 1 : amount
-                x = obj.getRand(obj.lowerBoundX, obj.upperBoundX);
-                y = obj.getRand(obj.lowerBoundY, obj.upperBoundY);
-                gene = Gene(x, y, obj.lowerBoundX, obj.upperBoundX, obj.lowerBoundY, obj.upperBoundY);
+                x = obj.getRand(Gene.lowerBoundX, Gene.upperBoundX);
+                y = obj.getRand(Gene.lowerBoundY, Gene.upperBoundY);
+                gene = Gene(x, y);
                 obj.genes = [obj.genes, gene];
             end
         end
@@ -38,7 +37,7 @@ classdef GA
         % The helper function
         function randNum = getRand(~, lowerBound, upperBound)
             range = upperBound - lowerBound;
-            randNum = floor(rand * range * 1000) / 1000;
+            randNum = floor(rand * range * 1000) / 1000; 
             randNum = randNum + lowerBound;
         end
         
@@ -115,15 +114,22 @@ classdef GA
             
             % Evaluate all genes first
             grade = obj.evaluate();
-            previousScore = max(grade);
+            score = max(grade);
             
-            while (terminalCounter < 10)
+            while (generation < obj.generationLimit)
+                previousScore = score;
+                [~, n] = size(obj.genes);
+                
                 % Sort the value by grade
                 [~, I] = sort(grade);
-                obj.genes = Y(I);
+                obj.genes = obj.genes(I);
 
                 % Select the survived gene
-                selected = obj.select(n, floor(obj.survived * n));
+                amount = floor(obj.survived * n);
+                if (amount > obj.numGeneLimit)
+                    amount = obj.numGeneLimit;
+                end
+                selected = obj.select(n, amount);
                 [~, geneSize] = size(selected);
                 original = obj.genes;
                 obj.genes = [];
@@ -154,23 +160,30 @@ classdef GA
                 [~, n] = size(obj.genes);
                 for i = 1 : n
                     if (rand < obj.mutationRate)
-                        obj.genes(i) = mutation(obj.genes(i));
+                        newGene = mutation(obj.genes(i));
+                        if 
                     end
                 end
                 
                 % Evaluate all The genes, and check the terminal
                 grade = obj.evaluate();
-                score = max(grade);
-                if (score - previousScore < obj.terminalDiff)
+                generation = generation + 1;
+                [score, i] = max(grade);
+                if (score == previousScore)
                     terminalCounter = terminalCounter + 1;
+                else
+                    terminalCounter = 0;
                 end
                 
                 % Ouput the generation
+                fprintf('-----------------------------------\n');
                 fprintf('generation: %d\n', generation);
                 fprintf('Best Scord: %f\n', score);
-                fprintf('terminal difference: %f\n', 
+                fprintf('Terminal difference: %f\n', score - previousScore);
+                % fprintf('Terminal Count: %f\n', terminalCounter);
+                fprintf('Best Gene: x = %f, y = %f, valid = %d\n', obj.genes(i).valueX, obj.genes(i).valueY, obj.genes(i).isValid);
+                fprintf('-----------------------------------\n\n');
             end
-            
         end
     end
 end

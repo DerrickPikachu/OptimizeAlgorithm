@@ -6,30 +6,24 @@ classdef Gene
         valueY
         geneStr
         isValid
-        upperBoundX
-        lowerBoundX
-        upperBoundY
-        lowerBoundY
-        offsetX
-        offsetY
     end
     properties (Constant)
+        upperBoundX = 4;
+        lowerBoundX = -1.5;
+        upperBoundY = 3;
+        lowerBoundY = -3;
+        offsetX = 1.5;
+        offsetY = 3;
         geneLen = 13;
         shift = 1000;
     end
     
     methods
         %  The constructor
-        function obj = Gene(x, y, lbx, ubx, lby, uby)
+        function obj = Gene(x, y)
             % Object value init
             obj.valueX = x;
             obj.valueY = y;
-            obj.lowerBoundX = lbx;
-            obj.upperBoundX = ubx;
-            obj.lowerBoundY = lby;
-            obj.upperBoundY = uby;
-            obj.offsetX = -lbx;
-            obj.offsetY = -lby;
             
             % Setup corresponding gene sequence
             obj.geneStr = encode(obj);
