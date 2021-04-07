@@ -1,8 +1,0 @@
-
-
-
-
-
-function value = targetFunction(x, y)
-    value = sin(x + y)  + 
-end

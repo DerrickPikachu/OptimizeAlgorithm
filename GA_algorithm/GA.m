@@ -120,7 +120,7 @@ classdef GA
             
             % Evaluate all genes first
             grade = obj.evaluate();
-            score = max(grade);
+            score = min(grade);
             graphY(generation + 1) = score;
             
             while (generation < obj.generationLimit)
@@ -128,7 +128,7 @@ classdef GA
                 [~, n] = size(obj.genes);
                 
                 % Sort the value by grade
-                [~, I] = sort(grade);
+                [~, I] = sort(grade, 'descend');
                 obj.genes = obj.genes(I);
 
                 % Select the survived gene
@@ -177,7 +177,7 @@ classdef GA
                 % Evaluate all The genes, and check the terminal
                 grade = obj.evaluate();
                 generation = generation + 1;
-                [score, i] = max(grade);
+                [score, i] = min(grade);
                 graphY(generation + 1) = score;
                 if (score == previousScore)
                     terminalCounter = terminalCounter + 1;
