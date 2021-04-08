@@ -6,8 +6,8 @@ lby = -3;
 
 % Setup some parameters of GA
 survived = 0.80;
-crossover = 0.70;
-mutation = 0.15;
+crossover = 0.90;
+mutation = 0.01;
 
 myGA = GA(10, @targetFunction, ubx, lbx, uby, lby);
 myGA = myGA.setParameters(survived, crossover, mutation);

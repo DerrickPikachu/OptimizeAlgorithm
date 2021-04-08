@@ -212,7 +212,8 @@ classdef GA
                 grade = obj.evaluate();
                 generation = generation + 1;
                 [score, i] = min(grade);
-                graphY(generation + 1) = score;
+                meanValue = mean(grade);
+                graphY(generation + 1) = meanValue;
                 if (score == previousScore)
                     terminalCounter = terminalCounter + 1;
                 else
@@ -223,6 +224,7 @@ classdef GA
                 fprintf('-----------------------------------\n');
                 fprintf('generation: %d\n', generation);
                 fprintf('Best Scord: %f\n', score);
+                fprintf('Mean: %f\n', meanValue);
                 fprintf('Terminal difference: %f\n', score - previousScore);
                 fprintf('Terminal Count: %f\n', terminalCounter);
                 fprintf('Best Gene: x = %f, y = %f, valid = %d\n', obj.genes(i).valueX, obj.genes(i).valueY, obj.genes(i).isValid);
