@@ -1,13 +1,9 @@
 function [childA, childB] = crossOver(geneA, geneB)
-    % Get boundary
-    ubx = geneA.upperBoundX;
-    lbx = geneA.lowerBoundX;
-    uby = geneA.upperBoundY;
-    lby = geneA.lowerBoundY;
+    % Get b
 
     % Init child
-    childA = Gene(0, 0, ubx, lbx, uby, lby);
-    childB = Gene(0, 0, ubx, lbx, uby, lby);
+    childA = Gene(0, 0);
+    childB = Gene(0, 0);
 
     % Copy the gene sequence
     savedGeneA = geneA.geneStr(10: 17);

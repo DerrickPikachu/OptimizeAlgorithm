@@ -20,13 +20,7 @@ classdef GA
     
     methods
         % Constructor
-        function obj = GA(amount, callBack, ubx, lbx, uby, lby)
-            % Init data
-            obj.upperBoundX = ubx;
-            obj.lowerBoundX = lbx;
-            obj.upperBoundY = uby;
-            obj.lowerBoundY = lby;
-            
+        function obj = GA(amount, callBack, )
             % Set up the target function
             obj.evaluateFunction = callBack;
             
@@ -37,9 +31,9 @@ classdef GA
             
             % Init the genes
             for i = 1 : amount
-                x = obj.getRand(obj.lowerBoundX, obj.upperBoundX);
-                y = obj.getRand(obj.lowerBoundY, obj.upperBoundY);
-                gene = Gene(x, y, obj.upperBoundX, obj.lowerBoundX, obj.upperBoundY, obj.lowerBoundY);
+                x = obj.getRand(Gene.lowerBoundX, Gene.upperBoundX);
+                y = obj.getRand(Gene.lowerBoundY, Gene.upperBoundY);
+                gene = Gene(x, y);
                 obj.genes = [obj.genes, gene];
             end
         end
