@@ -7,12 +7,15 @@ classdef GA
         lowerBoundX
         upperBoundY
         lowerBoundY
+        crossoverRate
+        mutationRate
+        survived
     end
     properties(Constant)
         distribution = 70; % persentage
-        survived = 0.80; % probability
-        crossOverRate = 0.80; % probability
-        mutationRate = 0.15; % probability
+        % survived = 0.80; % probability
+        % crossOverRate = 0.80; % probability
+        % mutationRate = 0.15; % probability
         terminateLimit = 5;
         numGeneLimit = 500;
         generationLimit = 20;
@@ -116,6 +119,15 @@ classdef GA
         end
         
         % Public methods
+        % Always call this function to setup your parameter before fitting
+        % the objective function
+        function obj = setParameters(obj, survived, crossover, mutation)
+            obj.survived = survived;
+            obj.crossoverRate = crossover;
+            obj.mutationRate = mutation;
+        end
+        
+        % Call this function to start fitting
         function gene = fit(obj)
             previousScore = 0;
             score = 0;
@@ -162,7 +174,7 @@ classdef GA
                 end
                 child = [];
                 for i = 1 : 2 : n
-                    if (rand < obj.crossOverRate)
+                    if (rand < obj.crossoverRate)
                         [c1, c2] = crossOver(obj.genes(i), obj.genes(i + 1));
                         if (c1.isValid)
                             child = [child, c1];
