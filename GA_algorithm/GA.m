@@ -17,8 +17,8 @@ classdef GA
         % crossOverRate = 0.80; % probability
         % mutationRate = 0.15; % probability
         terminateLimit = 5;
-        numGeneLimit = 500;
-        generationLimit = 20;
+        numGeneLimit = 200;
+        generationLimit = 500;
     end
     
     methods
@@ -69,43 +69,52 @@ classdef GA
             end
         end
         
-        function selected = select(obj, n, amount)
-            goods = 0;
-            bads = 0;
-            sequence = zeros(1, n);
+        function index = shooting(~, scoresPrefixSum)
+            [~, right] = size(scoresPrefixSum);
+            left = 1;
+            sum = scoresPrefixSum(right);
+            hit = rand * sum;
             
-            % Init sequence
-            for i = 1 : n
-                sequence(i) = i;
-            end
-            
-            % Count the good survived gene and bad survive gene
-            for i = 1 : amount
-                randNum = ceil(rand * 100);
-                if (randNum <= obj.distribution)
-                    goods = goods + 1;
+            % Binary search
+            while (left <= right)
+                mid = floor((left + right) / 2);
+                % fprintf('left: %d, right: %d, mid: %d\n', left, right, mid);
+                % fprintf('mid value: %f\n', scoresPrefixSum(mid));
+                if (scoresPrefixSum(mid) < hit)
+                    left = mid + 1;
+                elseif (scoresPrefixSum(mid) > hit)
+                    right = mid - 1;
                 else
-                    bads = bads + 1;
+                    left = mid;
+                    break;
                 end
             end
+            index = left;
+            % fprintf('hit: %f sum: %f\n', hit, sum);
+        end
+        
+        % Select the gene to survived
+        function selected = select(obj, originalGenes, sortedScores, amount)
+            % map = containers.Map('KeyType', 'int32', 'ValueType', 'int32');
+            [~, n] = size(sortedScores);
+            selected = Gene.empty(n, 0);
+            scorePrefixSum = zeros(1, n);
+            sum = 0;
             
-            fprintf('goods: %d\n', goods);
-            fprintf('bads: %d\n', bads);
-            
-            % Choose the gene we need
-            half = floor(n / 2);
-            if (goods >= half)
-                selectedGoods = sequence(n - goods + 1 : n);
-                selectedBads = obj.getRandomGene(sequence(1 : n - goods), bads);
-            elseif (bads >= half)
-                selectedGoods = obj.getRandomGene(sequence(bads + 1 : n), goods);
-                selectedBads = sequence(1, bads);
-            else
-                selectedGoods = obj.getRandomGene(sequence(half + 1 : n), goods);
-                selectedBads = obj.getRandomGene(sequence(1: half), bads);
+            % Build the prefix sum
+            for i = 1 : n
+                sum = sum + sortedScores(i);
+                scorePrefixSum(i) = sum;
             end
             
-            selected = [selectedGoods, selectedBads];
+            for i = 1 : amount
+                % Shoot to find a gene, and delete the found gene from the
+                % original Gene array
+                index = obj.shooting(scorePrefixSum);
+                selected(i) = originalGenes(index);
+                scorePrefixSum(index) = [];
+                originalGenes(index) = [];
+            end
         end
         
         function grade = evaluate(obj)
@@ -115,6 +124,15 @@ classdef GA
                 x = obj.genes(i).valueX;
                 y = obj.genes(i).valueY;
                 grade(i) = obj.evaluateFunction(x, y);
+            end
+        end
+        
+        function grade = normalization(~, sortedScore)
+            [~, n] = size(sortedScore);
+            bias = sortedScore(1) + 1;
+            grade = zeros(1, n);
+            for i = 1 : n
+                grade(i) = bias - sortedScore(i);
             end
         end
         
@@ -151,20 +169,13 @@ classdef GA
                 [~, n] = size(obj.genes);
                 
                 % Sort the value by grade
-                [~, I] = sort(grade, 'descend');
+                [grade, I] = sort(grade, 'descend');
                 obj.genes = obj.genes(I);
 
                 % Select the survived gene
-                amount = floor(obj.survived * n);
-                if (amount > obj.numGeneLimit)
-                    amount = obj.numGeneLimit;
-                end
-                selected = obj.select(n, amount);
-                [~, geneSize] = size(selected);
-                original = obj.genes;
-                obj.genes = [];
-                for i = 1 : geneSize
-                    obj.genes = [obj.genes, original(selected(i))];
+                if (n > obj.numGeneLimit)
+                    normalized = obj.normalization(grade);
+                    obj.genes = obj.select(obj.genes, normalized, obj.numGeneLimit);
                 end
 
                 % Cross over
