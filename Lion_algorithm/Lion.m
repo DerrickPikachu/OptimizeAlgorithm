@@ -21,6 +21,7 @@ classdef Lion
             obj.value = roundValue(value, obj.shift);
             obj.fitnessFunction = evaluateFunc;
             obj.fitness = obj.fitnessFunction(obj.value);
+            obj.gender = 1;
         end
         
         function obj = growUp(obj)

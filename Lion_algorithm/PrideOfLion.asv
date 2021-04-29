@@ -44,10 +44,17 @@ classdef PrideOfLion
             mutationRange = (obj.upperBound - obj.lowerBound) / 2;
             bias = mutationRange / 2;
             
+            %fprintf('range: %f', mutationRange);
+            %fprintf('bias: %f', bias);
+            
             for i = 1 : obj.crossoverCubs
                 % Get the mutation rand number
                 randNum = rand * mutationRange - bias;
                 newVal = obj.cubs(i).value + randNum;
+                
+                %fprintf('orginal: %f\n', obj.cubs(i).value);
+                %fprintf('randNum: %f\n', randNum);
+                %fprintf('newVal: %f\n', newVal);
                 
                 % Limit Check
                 if newVal > obj.upperBound
@@ -58,6 +65,19 @@ classdef PrideOfLion
                 
                 % Bron new cubs
                 obj.cubs(obj.crossoverCubs + i) = Lion(newVal, @evaluateFunc);
+            end
+        end
+        
+        function obj = classify(obj)
+            [~, numOfCubs] = size(obj.cubs);
+            
+            % Linear probing
+            for i = 1 : numOfCubs / 2
+                choosen = int32(ceil(rand * numOfCubs));
+                while obj.cubs(choosen).gender == 0
+                    choosen = mod(choosen + 1, numOfCubs);
+                end
+                obj.cubs(choosen).gender = 0;
             end
         end
     end

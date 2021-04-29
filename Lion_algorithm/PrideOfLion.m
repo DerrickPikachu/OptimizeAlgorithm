@@ -67,6 +67,19 @@ classdef PrideOfLion
                 obj.cubs(obj.crossoverCubs + i) = Lion(newVal, @evaluateFunc);
             end
         end
+        
+        function obj = classify(obj)
+            [~, numOfCubs] = size(obj.cubs);
+            
+            % Linear probing
+            for i = 1 : numOfCubs / 2
+                choosen = int32(ceil(rand * numOfCubs));
+                while obj.cubs(choosen).gender == 0
+                    choosen = mod(choosen + 1, numOfCubs);
+                end
+                obj.cubs(choosen).gender = 0;
+            end
+        end
     end
 end
 
