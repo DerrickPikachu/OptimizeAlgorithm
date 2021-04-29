@@ -44,17 +44,10 @@ classdef PrideOfLion
             mutationRange = (obj.upperBound - obj.lowerBound) / 2;
             bias = mutationRange / 2;
             
-            %fprintf('range: %f', mutationRange);
-            %fprintf('bias: %f', bias);
-            
             for i = 1 : obj.crossoverCubs
                 % Get the mutation rand number
                 randNum = rand * mutationRange - bias;
                 newVal = obj.cubs(i).value + randNum;
-                
-                %fprintf('orginal: %f\n', obj.cubs(i).value);
-                %fprintf('randNum: %f\n', randNum);
-                %fprintf('newVal: %f\n', newVal);
                 
                 % Limit Check
                 if newVal > obj.upperBound
