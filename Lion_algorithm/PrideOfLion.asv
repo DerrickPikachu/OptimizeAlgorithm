@@ -107,10 +107,17 @@ classdef PrideOfLion
         end
         
         function isWin = fightNomad(obj, nomad)
-            isWin = ~(obj.male.value < nomad.value && obj.prideHealthy() < nomad.value);
+            fprintf('male: %f\n', obj.male.fitness);
+            fprintf('pride healthy: %f\n', obj.prideHealthy());
+            fprintf('nomad: %f\n', nomad.fitness);
+            isWin = ~(obj.male.fitness < nomad.fitness && obj.prideHealthy() < nomad.fitness);
         end
         
-        fu
+        function obj = occupied(obj, nomad)
+            % After calling fightNomad function, iden
+            obj.male = nomad;
+            obj.cubs = Lion.empty(0, 2 * obj.crossoverCubs);
+        end
     end
 end
 
