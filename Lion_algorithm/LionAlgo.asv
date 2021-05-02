@@ -5,7 +5,7 @@ classdef LionAlgo
         lowerBound
         upperBound
         % call back function
-        evaluateFunc
+        fitnessFunc
     end
     
     properties (Constant)
@@ -16,7 +16,7 @@ classdef LionAlgo
         function obj = LionAlgo(lowerBound, upperBound, fitness)
             obj.lowerBound = lowerBound;
             obj.upperBound = upperBound;
-            obj.evaluateFunc = fitness;
+            obj.fitnessFunc = fitness;
             obj.prides = PrideOfLion.empty(0, obj.numOfPride);
         end
         
@@ -28,9 +28,9 @@ classdef LionAlgo
                 val1 = rand * range - bias;
                 val2 = rand * range - bias;
                 
-                male = Lion(val1, obj.evaluateFunc);
-                female = Lion(val2, obj.evaluateFunc);
-                obj.prides(i) = PrideOfLion(male, female, obj.lowerBound, obj.upperBound, obj.evaluateFunc);
+                male = Lion(val1, obj.fitnessFunc);
+                female = Lion(val2, obj.fitnessFunc);
+                obj.prides(i) = PrideOfLion(male, female, obj.lowerBound, obj.upperBound, obj.fitnessFunc);
             end
         end
         
@@ -42,15 +42,29 @@ classdef LionAlgo
         end
         
         function obj = defence(obj)
-            range = obj.lowerBound - obj.upperBound;
-            bias = range / 2;
-            val = rand * range - bias;
-            nomad = Lion(val, obj.evaluateFunc);
-            
+            for i = 1 : obj.numOfPride
+                fprintf('pride: %d', i);
+                
+                % Get rand new value
+                range = obj.lowerBound - obj.upperBound;
+                bias = range / 2;
+                val = rand * range - bias;
+                
+                % Generate nomad lion and challenge the pride
+                nomad = Lion(val, obj.fitnessFunc);
+                if ~obj.prides(i).fightNomad(nomad)
+                    fprintf('lose');
+                    obj.prides(i).occupied(nomad);
+                else
+                    fprintf('win');
+                end
+            end
         end
         
         function obj = fit(obj)
-            obj = obj.generatePride().reproduce();
+            obj = obj.generatePride();
+            obj = obj.reproduce();
+            obj = obj.defence();
         end
     end
 end

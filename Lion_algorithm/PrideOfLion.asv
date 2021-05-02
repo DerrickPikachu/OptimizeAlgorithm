@@ -72,7 +72,7 @@ classdef PrideOfLion
         function obj = nextTimeStep(obj)
             [~, n] = size(obj.cubs);
             for i = 1 : n
-                obj = obj.cubs(i).growUp();
+                obj.cubs(i) = obj.cubs(i).growUp();
             end
         end
         
@@ -90,24 +90,27 @@ classdef PrideOfLion
         end
         
         function prideFitness = prideHealthy(obj)
+            % Calculate the healthy of the pride
+            % Use the formula provided by the paper
             [~, n] = size(obj.cubs);
             maleCubs = n / 2;
             cubsValueSum = 0;
             currentAge = obj.cubs(1).age;
             
             for i = 1 : n
-                cubsValueSum = cubsValueSum + obj.cubs(i).value;
+                cubsValueSum = cubsValueSum + obj.cubs(i).fitness;
             end
             fitnessOfCubs = (obj.yearOfMature / (currentAge + 1)) * (cubsValueSum / maleCubs);
             
-            totalFitness = obj.male.value + obj.female
+            totalFitness = obj.male.fitness + obj.female.fitness + fitnessOfCubs;
+            prideFitness = totalFitness / (2 * (1 + maleCubs));
         end
         
-        function obj = fightNomad(obj, nomad)
-            if obj.male.value < nomad.value
-                
-            end
+        function isWin = fightNomad(obj, nomad)
+            isWin = ~(obj.male.value < nomad.value && obj.prideHealthy() < nomad.value);
         end
+        
+        fu
     end
 end
 
