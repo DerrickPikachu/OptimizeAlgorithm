@@ -15,6 +15,7 @@ classdef PrideOfLion
     properties (Constant)
         crossoverCubs = 4
         mutationCubs = 4
+        yearOfMature = 5
     end
     
     methods
@@ -68,6 +69,13 @@ classdef PrideOfLion
             end
         end
         
+        function obj = nextTimeStep(obj)
+            [~, n] = size(obj.cubs);
+            for i = 1 : n
+                obj.cubs(i) = obj.cubs(i).growUp();
+            end
+        end
+        
         function obj = classify(obj)
             [~, numOfCubs] = size(obj.cubs);
             
@@ -78,6 +86,29 @@ classdef PrideOfLion
                     choosen = mod(choosen + 1, numOfCubs);
                 end
                 obj.cubs(choosen).gender = 0;
+            end
+        end
+        
+        function prideFitness = prideHealthy(obj)
+            % Calculate the healthy of the pride
+            % Use the formula provided by the paper
+            [~, n] = size(obj.cubs);
+            maleCubs = n / 2;
+            cubsValueSum = 0;
+            currentAge = obj.cubs(1).age;
+            
+            for i = 1 : n
+                cubsValueSum = cubsValueSum + obj.cubs(i).fitness;
+            end
+            fitnessOfCubs = (obj.yearOfMature / (currentAge + 1)) * (cubsValueSum / maleCubs);
+            
+            totalFitness = obj.male.fitness + obj.female.fitness + fitnessOfCubs;
+            prideFitness = totalFitness / (2 * (1 + maleCubs));
+        end
+        
+        function obj = fightNomad(obj, nomad)
+            if obj.male.value < nomad.value
+                
             end
         end
     end
