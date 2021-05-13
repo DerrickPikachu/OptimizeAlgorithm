@@ -89,6 +89,12 @@ classdef PrideOfLion
             end
         end
         
+        function obj = reproduce(obj)
+            obj = obj.crossover();
+            obj = obj.mutation();
+            obj = obj.classify();
+        end
+        
         function prideFitness = prideHealthy(obj)
             % Calculate the healthy of the pride
             % Use the formula provided by the paper
@@ -111,7 +117,7 @@ classdef PrideOfLion
             fprintf('male: %f\n', obj.male.fitness);
             fprintf('pride healthy: %f\n', obj.prideHealthy());
             fprintf('nomad: %f\n', nomad.fitness);
-            isWin = ~(obj.male.fitness < nomad.fitness && obj.prideHealthy() < nomad.fitness);
+            isWin = ~(obj.male.fitness < nomad.fitness && obj.prideHealthy() < nomad.fitness); 
         end
         
         function obj = occupied(obj, nomad)
@@ -119,6 +125,21 @@ classdef PrideOfLion
             % lose, then use this function to occupied the pride
             obj.male = nomad;
             obj.cubs = Lion.empty(0, 2 * obj.crossoverCubs);
+        end
+        
+        function obj = takeOver(obj)
+            % When the cubs grow up, They will try to take over the pride
+            if obj.cubs(1).age >= obj.yearOfMature
+                [~, n] = size(obj.cubs);
+                for i = 1 : n
+                    if obj.cubs(i).gender == 1 && obj.cubs(i).fitness > obj.male.fitness
+                        obj.male = obj.cubs(i);
+                    elseif obj.cubs(i).gender == 0 && obj.cubs(i).fitness > obj.female.fitness
+                        obj.female = obj.female.cubs(i);
+                    end
+                end
+                obj.cubs = Lion.empty(0, 2 * obj.crossoverCubs);
+            end
         end
     end
 end

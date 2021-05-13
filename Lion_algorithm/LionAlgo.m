@@ -36,8 +36,7 @@ classdef LionAlgo
         
         function obj = reproduce(obj)
             for i = 1 : obj.numOfPride
-                obj.prides(i) = obj.prides(i).crossover();
-                obj.prides(i) = obj.prides(i).mutation();
+                obj.prides(i) = obj.prides(i).reproduce();
             end
         end
         

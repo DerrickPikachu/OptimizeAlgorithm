@@ -43,7 +43,7 @@ classdef LionAlgo
         
         function obj = defence(obj)
             for i = 1 : obj.numOfPride
-                fprintf('pride: %d', i);
+                fprintf('pride: %d\n', i);
                 
                 % Get rand new value
                 range = obj.lowerBound - obj.upperBound;
@@ -53,16 +53,18 @@ classdef LionAlgo
                 % Generate nomad lion and challenge the pride
                 nomad = Lion(val, obj.fitnessFunc);
                 if ~obj.prides(i).fightNomad(nomad)
-                    fprintf('lose');
-                    obj.prides(i).occupied(nomad);
+                    fprintf('lose\n');
+                    obj.prides(i) = obj.prides(i).occupied(nomad);
                 else
-                    fprintf('win');
+                    fprintf('win\n');
                 end
+                fprintf('-------------------------\n');
             end
         end
         
         function obj = fit(obj)
             obj = obj.generatePride();
+            while 
             obj = obj.reproduce();
             obj = obj.defence();
         end
