@@ -15,7 +15,8 @@ classdef PrideOfLion
     properties (Constant)
         crossoverCubs = 4
         mutationCubs = 4
-        yearOfMature = 5
+        yearOfMature = 3
+        mutationRange = 1;
     end
     
     methods
@@ -33,8 +34,13 @@ classdef PrideOfLion
             % Let the male and female crossover and bron cubs
             % Before coressover, kill the previous generation first
             
+            %mean = (obj.male.value + obj.female.value) / 2;
+            %range = mean * 2;
+            
             % Bron new cubs
             for i = 1 : obj.crossoverCubs
+                %sample = rand * range - mean;
+                %newValue = obj.getStrongest() + sample;
                 crossPercent = rand;
                 newValue = obj.male.value * crossPercent + obj.female.value * (1 - crossPercent);
                 obj.cubs(i) = Lion(newValue, obj.fitnessFunc);
@@ -42,15 +48,15 @@ classdef PrideOfLion
         end
         
         function obj = mutation(obj)
-            mutationRange = (obj.upperBound - obj.lowerBound) / 2;
-            bias = mutationRange / 2;
+            range = ((obj.upperBound - obj.lowerBound) / 2) * obj.mutationRange;
+            bias = range / 2;
             
             %fprintf('range: %f', mutationRange);
             %fprintf('bias: %f', bias);
             
             for i = 1 : obj.crossoverCubs
                 % Get the mutation rand number
-                randNum = rand * mutationRange - bias;
+                randNum = rand * range - bias;
                 newVal = obj.cubs(i).value + randNum;
                 
                 %fprintf('orginal: %f\n', obj.cubs(i).value);
@@ -71,8 +77,10 @@ classdef PrideOfLion
         
         function obj = nextTimeStep(obj)
             [~, n] = size(obj.cubs);
-            for i = 1 : n
-                obj.cubs(i) = obj.cubs(i).growUp();
+            if ~isempty(obj.cubs)
+                for i = 1 : n
+                    obj.cubs(i) = obj.cubs(i).growUp();
+                end
             end
         end
         
@@ -83,7 +91,7 @@ classdef PrideOfLion
             for i = 1 : numOfCubs / 2
                 choosen = int32(ceil(rand * numOfCubs));
                 while obj.cubs(choosen).gender == 0
-                    choosen = mod(choosen + 1, numOfCubs);
+                    choosen = mod(choosen + 1, numOfCubs) + 1;
                 end
                 obj.cubs(choosen).gender = 0;
             end
@@ -114,9 +122,9 @@ classdef PrideOfLion
         
         function isWin = fightNomad(obj, nomad)
             % Fight with the nomad, and identify who is the winner
-            fprintf('male: %f\n', obj.male.fitness);
-            fprintf('pride healthy: %f\n', obj.prideHealthy());
-            fprintf('nomad: %f\n', nomad.fitness);
+            %fprintf('male: %f\n', obj.male.fitness);
+            %fprintf('pride healthy: %f\n', obj.prideHealthy());
+            %fprintf('nomad: %f\n', nomad.fitness);
             isWin = ~(obj.male.fitness < nomad.fitness && obj.prideHealthy() < nomad.fitness); 
         end
         
@@ -129,16 +137,26 @@ classdef PrideOfLion
         
         function obj = takeOver(obj)
             % When the cubs grow up, They will try to take over the pride
-            if obj.cubs(1).age >= obj.yearOfMature
-                [~, n] = size(obj.cubs);
-                for i = 1 : n
-                    if obj.cubs(i).gender == 1 && obj.cubs(i).fitness > obj.male.fitness
-                        obj.male = obj.cubs(i);
-                    elseif obj.cubs(i).gender == 0 && obj.cubs(i).fitness > obj.female.fitness
-                        obj.female = obj.female.cubs(i);
+            if ~isempty(obj.cubs)
+                if obj.cubs(1).age >= obj.yearOfMature
+                    [~, n] = size(obj.cubs);
+                    for i = 1 : n
+                        if obj.cubs(i).gender == 1 && obj.cubs(i).fitness < obj.male.fitness
+                            obj.male = obj.cubs(i);
+                        elseif obj.cubs(i).gender == 0 && obj.cubs(i).fitness < obj.female.fitness
+                            obj.female = obj.cubs(i);
+                        end
                     end
+                    obj.cubs = Lion.empty(0, 2 * obj.crossoverCubs);
                 end
-                obj.cubs = Lion.empty(0, 2 * obj.crossoverCubs);
+            end
+        end
+        
+        function bestValue = getStrongest(obj)
+            if obj.male.fitness < obj.female.fitness
+                bestValue = obj.male.fitness;
+            else
+                bestValue = obj.female.fitness;
             end
         end
     end
