@@ -5,7 +5,7 @@ classdef Lion
     properties
         age
         gender
-        value
+        position
         fitness
         % call back function
         fitnessFunction
@@ -18,9 +18,10 @@ classdef Lion
     methods
         function obj = Lion(value, evaluateFunc)
             obj.age = 0;
-            obj.value = roundValue(value, obj.shift);
+            obj.position = [roundValue(value(1), obj.shift), roundValue(value(2), obj.shift)];
+            %obj.value = roundValue(value, obj.shift);
             obj.fitnessFunction = evaluateFunc;
-            obj.fitness = obj.fitnessFunction(obj.value);
+            obj.fitness = obj.fitnessFunction(obj.position);
             obj.gender = 1;
         end
         

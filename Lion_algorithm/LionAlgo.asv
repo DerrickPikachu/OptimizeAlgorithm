@@ -26,13 +26,11 @@ classdef LionAlgo
                 % Random two position
                 range = obj.upperBound - obj.lowerBound;
                 bias = range / 2;
-                malePos(1) = rand * range - bias;
-                malePos(2) = rand * range - bias;
-                femalePos(1) = rand * range - bias;
-                femalePos(2) = rand * range - bias;
+                val1 = rand * range - bias;
+                val2 = rand * range - bias;
                 
-                male = Lion(malePos, obj.fitnessFunc);
-                female = Lion(femalePos, obj.fitnessFunc);
+                male = Lion(val1, obj.fitnessFunc);
+                female = Lion(val2, obj.fitnessFunc);
                 obj.prides(i) = PrideOfLion(male, female, obj.lowerBound, obj.upperBound, obj.fitnessFunc);
             end
         end
@@ -52,11 +50,10 @@ classdef LionAlgo
                 % Get rand new value
                 range = obj.upperBound - obj.lowerBound;
                 bias = range / 2;
-                nomadPos(1) = rand * range - bias;
-                nomadPos(2) = rand * range - bias;
+                val = rand * range - bias;
                 
                 % Generate nomad lion and challenge the pride
-                nomad = Lion(nomadPos, obj.fitnessFunc);
+                nomad = Lion(val, obj.fitnessFunc);
                 if ~obj.prides(i).fightNomad(nomad)
                     %fprintf('lose\n');
                     obj.prides(i) = obj.prides(i).occupied(nomad);

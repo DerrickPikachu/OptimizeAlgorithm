@@ -41,12 +41,12 @@ classdef PrideOfLion
             for i = 1 : obj.crossoverCubs
                 %sample = rand * range - mean;
                 %newValue = obj.getStrongest() + sample;
-                newPos = [0, 0];
+                newPos = zero(2);
                 for j = 1 : 2
                     crossPercent = rand;
                     newPos(j) = obj.male.position(j) * crossPercent + obj.female.position(j) * (1 - crossPercent); 
                 end
-                obj.cubs(i) = Lion(newPos, obj.fitnessFunc);
+                obj.cubs(i) = Lion(newValue, obj.fitnessFunc);
             end
         end
         
@@ -59,7 +59,7 @@ classdef PrideOfLion
             
             for i = 1 : obj.crossoverCubs
                 % Get the mutation rand number
-                newPos = [0, 0];
+                newPos = zero(2);
                 for j = 1 : 2
                     randNum = rand * range - bias;
                     newPos(j) = obj.cubs(i).position(j) + randNum;
