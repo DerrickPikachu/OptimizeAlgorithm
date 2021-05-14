@@ -10,7 +10,7 @@ classdef LionAlgo
     
     properties (Constant)
         numOfPride = 1
-        maxIter = 500
+        maxIter = 100
     end
     
     methods

@@ -16,7 +16,7 @@ classdef PrideOfLion
         crossoverCubs = 4
         mutationCubs = 4
         yearOfMature = 3
-        mutationRange = 1;
+        mutationRange = 1
     end
     
     methods
@@ -125,7 +125,7 @@ classdef PrideOfLion
             %fprintf('male: %f\n', obj.male.fitness);
             %fprintf('pride healthy: %f\n', obj.prideHealthy());
             %fprintf('nomad: %f\n', nomad.fitness);
-            isWin = ~(obj.male.fitness < nomad.fitness && obj.prideHealthy() < nomad.fitness); 
+            isWin = ~(obj.male.fitness > nomad.fitness && obj.prideHealthy() > nomad.fitness); 
         end
         
         function obj = occupied(obj, nomad)
