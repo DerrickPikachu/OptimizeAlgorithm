@@ -1,8 +1,12 @@
 % Boundary of x and y
-ubx = 4;
-lbx = -1.5;
-uby = 3;
-lby = -3;
+ubx = 600;
+lbx = -600;
+uby = 600;
+lby = -600;
+%ubx = 4;
+%lbx = -1.5;
+%uby = 3;
+%lby = -3;
 
 % Setup some parameters of GA
 survived = 0.80;

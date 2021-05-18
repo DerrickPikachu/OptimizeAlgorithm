@@ -34,6 +34,9 @@ classdef PrideOfLion
             % Let the male and female crossover and bron cubs
             % Before coressover, kill the previous generation first
             
+            % ****************************************
+            % TODO: Change this function to dynamic dimension
+            % ****************************************
             % Bron new cubs
             for i = 1 : obj.crossoverCubs
                 newPos = [0, 0];
@@ -43,13 +46,6 @@ classdef PrideOfLion
                     sample = rand* range - mean;
                     newPos(j) = obj.getStrongest() + sample;
                 end
-                %sample = rand * range - mean;
-                %newValue = obj.getStrongest() + sample;
-                %newPos = [0, 0];
-                %for j = 1 : 2
-                %    crossPercent = rand;
-                %    newPos(j) = (obj.male.position(j) * crossPercent) + (obj.female.position(j) * (1 - crossPercent)); 
-                %end
                 obj.cubs(i) = Lion(newPos, obj.fitnessFunc);
             end
         end
