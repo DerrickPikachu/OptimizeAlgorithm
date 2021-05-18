@@ -1,0 +1,7 @@
+function val = evaluateFunc(position)
+    %val = (position(1)^2 + position(2)^2)/4000 - cos(position(1)) * cos(position(2) / sqrt(2)) + 1;
+    x = position(1);
+    y = position(2);
+    val = 20 + x
+end
+

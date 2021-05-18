@@ -1,2 +1,2 @@
-lionAl = LionAlgo(-300, 300, @evaluateFunc);
-lionAl.fit();
+lionAl = LionAlgo(-600, 600, @evaluateFunc);
+lionAl = lionAl.fit();

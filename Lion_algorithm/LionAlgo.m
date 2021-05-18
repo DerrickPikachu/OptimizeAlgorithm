@@ -6,11 +6,13 @@ classdef LionAlgo
         upperBound
         % call back function
         fitnessFunc
+        meanArray
+        bestArray
     end
     
     properties (Constant)
-        numOfPride = 1
-        maxIter = 100
+        numOfPride = 10
+        maxIter = 500
     end
     
     methods
@@ -19,6 +21,8 @@ classdef LionAlgo
             obj.upperBound = upperBound;
             obj.fitnessFunc = fitness;
             obj.prides = PrideOfLion.empty(0, obj.numOfPride);
+            meanArray = zeros(1, obj.maxIter);
+            bestArray = zeros(1, obj.maxIter);
         end
         
         function obj = generatePride(obj)
@@ -79,18 +83,20 @@ classdef LionAlgo
             end
         end
         
-        function showCurrent(obj)
-            best = 0;
+        function obj = showCurrent(obj, iter)
+            best = obj.prides(1).male.fitness;
             sum = 0;
             for i = 1 : obj.numOfPride
                 prideBest = obj.prides(i).getStrongest();
                 if best > prideBest
                     best = prideBest;
                 end
-                sum = obj.prides(i).male.fitness + obj.prides(i).female.fitness;
+                sum = sum + obj.prides(i).male.fitness + obj.prides(i).female.fitness;
             end
             
             mean = sum / (2 * obj.numOfPride);
+            obj.meanArray(iter) = mean;
+            obj.bestArray(iter) = best;
             fprintf('current mean: %f\n', mean);
             fprintf('current best: %f\n', best);
             fprintf('---------------------------------\n');
@@ -103,7 +109,7 @@ classdef LionAlgo
                 obj = obj.defence();
                 obj = obj.takeOver();
                 obj = obj.nextIter();
-                obj.showCurrent();
+                obj = obj.showCurrent(i);
             end
         end
     end
