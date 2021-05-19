@@ -2,8 +2,10 @@ classdef LionAlgo
     
     properties
         prides
-        lowerBound
-        upperBound
+        %lowerBound
+        %upperBound
+        boundary
+        dimension
         % call back function
         fitnessFunc
         meanArray
@@ -16,28 +18,33 @@ classdef LionAlgo
     end
     
     methods
-        function obj = LionAlgo(lowerBound, upperBound, fitness)
-            obj.lowerBound = lowerBound;
-            obj.upperBound = upperBound;
+        function obj = LionAlgo(boundary, dimension, fitness)
+            %obj.lowerBound = lowerBound;
+            %obj.upperBound = upperBound;
+            obj.boundary = boundary;
+            obj.dimension = dimension;
             obj.fitnessFunc = fitness;
             obj.prides = PrideOfLion.empty(0, obj.numOfPride);
-            meanArray = zeros(1, obj.maxIter);
-            bestArray = zeros(1, obj.maxIter);
+            obj.meanArray = zeros(1, obj.maxIter);
+            obj.bestArray = zeros(1, obj.maxIter);
         end
         
         function obj = generatePride(obj)
             for i = 1 : obj.numOfPride
+                malePos = zeros(1, obj.dimension);
+                femalePos = zeros(1, obj.dimension);
+                
                 % Random two position
-                range = obj.upperBound - obj.lowerBound;
-                bias = range / 2;
-                malePos(1) = rand * range - bias;
-                malePos(2) = rand * range - bias;
-                femalePos(1) = rand * range - bias;
-                femalePos(2) = rand * range - bias;
+                for d = 1 : obj.dimension
+                    range = obj.boundary(d, 2) - obj.boundary(d, 1);
+                    bias = range / 2;
+                    malePos(d) = rand * range - bias;
+                    femalePos(d) = rand * range - bias;
+                end
                 
                 male = Lion(malePos, obj.fitnessFunc);
                 female = Lion(femalePos, obj.fitnessFunc);
-                obj.prides(i) = PrideOfLion(male, female, obj.lowerBound, obj.upperBound, obj.fitnessFunc);
+                obj.prides(i) = PrideOfLion(male, female, obj.boundary, obj.dimension, obj.fitnessFunc);
             end
         end
         
@@ -52,12 +59,14 @@ classdef LionAlgo
         function obj = defence(obj)
             for i = 1 : obj.numOfPride
                 %fprintf('pride: %d\n', i);
+                nomadPos = zeros(1, obj.dimension);
                 
                 % Get rand new value
-                range = obj.upperBound - obj.lowerBound;
-                bias = range / 2;
-                nomadPos(1) = rand * range - bias;
-                nomadPos(2) = rand * range - bias;
+                for d = 1 : obj.dimension
+                    range = obj.boundary(d, 2) - obj.boundary(d, 1);
+                    bias = range / 2;
+                    nomadPos(d) = rand * range - bias;
+                end
                 
                 % Generate nomad lion and challenge the pride
                 nomad = Lion(nomadPos, obj.fitnessFunc);

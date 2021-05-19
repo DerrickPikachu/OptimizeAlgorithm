@@ -10,9 +10,7 @@ classdef Lion
         % call back function
         fitnessFunction
         geneStr
-        geneLength
         dimension
-        boundary
     end
     
     properties (Constant)
@@ -22,17 +20,11 @@ classdef Lion
     methods
         function obj = Lion(value, evaluateFunc)
             obj.age = 0;
+            obj.position = [roundValue(value(1), obj.shift), roundValue(value(2), obj.shift)];
+            %obj.value = roundValue(value, obj.shift);
             obj.fitnessFunction = evaluateFunc;
-            obj.gender = 1;
-            obj.dimension = length(value);
-%             obj.boundary = boundary;
-            obj.position = zeros(1, obj.dimension);
-            
-            for i = 1 : obj.dimension
-                obj.position(i) = roundValue(value(i), obj.shift);
-            end
-            
             obj.fitness = obj.fitnessFunction(obj.position);
+            obj.gender = 1;
         end
         
         function obj = growUp(obj)

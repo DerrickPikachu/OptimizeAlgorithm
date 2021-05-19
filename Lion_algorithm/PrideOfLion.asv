@@ -43,9 +43,9 @@ classdef PrideOfLion
             for i = 1 : obj.crossoverCubs
                 newPos = [0, 0];
                 for j = 1 : obj.dimension
-                    % mean = (obj.male.position(j) + obj.female.position(j)) / 2;
+                    mean = (obj.male.position(j) + obj.female.position(j)) / 2;
                     range = abs(obj.male.position(j) - obj.female.position(j)) * 3;
-                    sample = rand* range - range / 2;
+                    sample = rand* range - mean;
                     newPos(j) = obj.getStrongest() + sample;
                 end
                 obj.cubs(i) = Lion(newPos, obj.fitnessFunc);
