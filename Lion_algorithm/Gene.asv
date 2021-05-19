@@ -57,7 +57,7 @@ classdef Gene
                 obj.position(i + 1) = bin2dec(gene) / obj.shift + obj.boundary(i + 1, 1);
             end
             obj = obj.boundaryFit();
-            obj.geneStr = obj.encode();
+            
             obj.fitness = obj.evaluateFunc(obj.position);
         end
         

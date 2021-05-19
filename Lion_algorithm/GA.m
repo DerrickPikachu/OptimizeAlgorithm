@@ -5,14 +5,16 @@ classdef GA
         genes
         dimension
         evaluateFunc
+        meanArray
+        bestArray
     end
     
     properties(Constant)
         initGenes = 10
         maxGene = 100
-        maxIter = 500
-        crossoverRate = 0.90
-        mutationRate = 0.15
+        maxIter = 150
+        crossoverRate = 0.70
+        mutationRate = 0.50
         surviveRate = 0.80
     end
     
@@ -22,6 +24,8 @@ classdef GA
             obj.boundary = boundary;
             obj.dimension = dimension;
             obj.evaluateFunc = evaluateFunc;
+            obj.meanArray = zeros(1, obj.maxIter);
+            obj.bestArray = zeros(1, obj.maxIter);
             
             % Randomly generate genes
             obj.genes = Gene.empty(0, obj.initGenes);
@@ -115,7 +119,8 @@ classdef GA
                 
                 % When the probability hit, do crossover
                 if (rand <= obj.crossoverRate)
-                    switchLen = floor(obj.genes(cur).geneLength / 2);
+                    switchLen = floor(obj.genes(cur).geneLength * 3 / 4);
+                    savedLen = floor((obj.genes(cur).geneLength - switchLen) / 2);
                     gene1 = obj.genes(cur).geneStr;
                     gene2 = obj.genes(cur + 1).geneStr;
                     newStr1 = '';
@@ -129,6 +134,8 @@ classdef GA
                         temStr1 = gene1(front : back);
                         temStr2 = gene2(front : back);
                         
+                        % childStr1 = append(temStr1(1 : savedLen), temStr2(savedLen + 1 : savedLen + switchLen), temStr1(savedLen + switchLen : geneLen));
+                        % childStr2 = append(temStr2(1 : savedLen), temStr1(savedLen + 1 : savedLen + switchLen), temStr2(savedLen + switchLen : geneLen));
                         childStr1 = append(temStr1(1 : geneLen - switchLen), temStr2(geneLen - switchLen + 1 : geneLen));
                         childStr2 = append(temStr2(1 : geneLen - switchLen), temStr1(geneLen - switchLen + 1 : geneLen));
                         % childStr1 = append(temStr1(1 : geneLen - switchLen), temStr2(1 : geneLen - switchLen));
@@ -156,8 +163,8 @@ classdef GA
             for i = 1 : len
                 if rand <= obj.mutationRate
                     geneLen = obj.genes(i).geneLength * obj.dimension;
-                    choosed = ceil(rand * geneLen);
                     gene = obj.genes(i).geneStr;
+                    choosed = ceil(rand * geneLen);
                     if gene(choosed) == '1'
                         gene(choosed) = '0';
                     else
@@ -168,7 +175,7 @@ classdef GA
             end
         end
         
-        function obj = showCurrent(obj)
+        function obj = showCurrent(obj, generation)
             [~, len] = size(obj.genes);
             sum = 0;
             best = obj.genes(1).fitness;
@@ -181,6 +188,9 @@ classdef GA
             end
             
             mean = sum / len;
+            obj.meanArray(generation) = mean;
+            obj.bestArray(generation) = best;
+            
             fprintf('mean: %f\n', mean);
             fprintf('best: %f\n', best);
             fprintf('------------------------------\n');
@@ -203,7 +213,7 @@ classdef GA
                     obj = obj.survive();
                 end
                 fprintf('generation: %d\n', gen);
-                obj = obj.showCurrent();
+                obj = obj.showCurrent(gen);
             end
         end
     end
