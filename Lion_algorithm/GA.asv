@@ -8,12 +8,12 @@ classdef GA
     end
     
     properties(Constant)
-        initGenes = 10
-        maxGene = 200;
-        maxIter = 500
-        crossoverRate = 0.90;
-        mutationRate = 0.50;
-        surviveRate = 0.80;
+        initGenes = 5
+        maxGene = 10
+        maxIter = 200
+        crossoverRate = 0.90
+        mutationRate = 0.05
+        surviveRate = 0.80
     end
     
     methods
@@ -114,7 +114,7 @@ classdef GA
                 
                 % When the probability hit, do crossover
                 if (rand <= obj.crossoverRate)
-                    switchLen = floor(obj.genes(cur).geneLength / 5);
+                    switchLen = floor(obj.genes(cur).geneLength / 2);
                     gene1 = obj.genes(cur).geneStr;
                     gene2 = obj.genes(cur + 1).geneStr;
                     newStr1 = '';
@@ -128,8 +128,8 @@ classdef GA
                         temStr1 = gene1(front : back);
                         temStr2 = gene2(front : back);
                         
-                        childStr1 = append(temStr1(1 : geneLen - switchLen), temStr2(geneLen - switchLen + 1 : geneLen));
-                        childStr2 = append(temStr2(1 : geneLen - switchLen), temStr1(geneLen - switchLen + 1 : geneLen));
+                        % childStr1 = append(temStr1(1 : geneLen - switchLen), temStr2(geneLen - switchLen + 1 : geneLen));
+                        % childStr2 = append(temStr2(1 : geneLen - switchLen), temStr1(geneLen - switchLen + 1 : geneLen));
                         
                         newStr1 = append(newStr1, childStr1);
                         newStr2 = append(newStr2, childStr2);
@@ -155,14 +155,11 @@ classdef GA
                     geneLen = obj.genes(i).geneLength * obj.dimension;
                     choosed = ceil(rand * geneLen);
                     gene = obj.genes(i).geneStr;
-                    fprintf('origin: %s\n', gene);
-                    fprintf('choosed: %d\n', choosed);
                     if gene(choosed) == '1'
                         gene(choosed) = '0';
                     else
                         gene(choosed) = '1';
                     end
-                    fprintf('changed: %s\n', gene);
                     obj.genes(i) = obj.genes(i).decode(gene);
                 end
             end
@@ -183,18 +180,27 @@ classdef GA
             mean = sum / len;
             fprintf('mean: %f\n', mean);
             fprintf('best: %f\n', best);
-            fprintf('------------------------------');
+            fprintf('------------------------------\n');
+        end
+        
+        function show(obj)
+            [~, len] = size(obj.genes);
+            for i = 1 : len
+                fprintf('%f %f\n', obj.genes(i).position(1), obj.genes(i).position(2));
+            end
         end
         
         function obj = fit(obj)
             for gen = 1 : obj.maxIter
-                [~, len] = size(obj.genes);
                 obj = obj.sortGene();
+                obj = obj.crossover();
+                obj = obj.mutation();
+                [~, len] = size(obj.genes);
                 if len > obj.maxGene
                     obj = obj.survive();
                 end
-                obj = obj.crossover();
-                obj = obj.mutation();
+                fprintf('generation: %d\n', gen);
+                obj = obj.showCurrent();
             end
         end
     end

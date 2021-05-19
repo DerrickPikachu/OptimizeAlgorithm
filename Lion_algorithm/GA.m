@@ -9,11 +9,11 @@ classdef GA
     
     properties(Constant)
         initGenes = 10
-        maxGene = 200;
+        maxGene = 100
         maxIter = 500
-        crossoverRate = 0.90;
-        mutationRate = 0.10;
-        surviveRate = 0.80;
+        crossoverRate = 0.90
+        mutationRate = 0.15
+        surviveRate = 0.80
     end
     
     methods
@@ -107,6 +107,7 @@ classdef GA
         
         function obj = crossover(obj)
             [~, len] = size(obj.genes);
+            obj.genes = obj.genes(randperm(len));
             
             % Crossover each two gene
             for i = 1 : floor(len / 2)
@@ -114,7 +115,7 @@ classdef GA
                 
                 % When the probability hit, do crossover
                 if (rand <= obj.crossoverRate)
-                    switchLen = floor(obj.genes(cur).geneLength / 5);
+                    switchLen = floor(obj.genes(cur).geneLength / 2);
                     gene1 = obj.genes(cur).geneStr;
                     gene2 = obj.genes(cur + 1).geneStr;
                     newStr1 = '';
@@ -130,6 +131,8 @@ classdef GA
                         
                         childStr1 = append(temStr1(1 : geneLen - switchLen), temStr2(geneLen - switchLen + 1 : geneLen));
                         childStr2 = append(temStr2(1 : geneLen - switchLen), temStr1(geneLen - switchLen + 1 : geneLen));
+                        % childStr1 = append(temStr1(1 : geneLen - switchLen), temStr2(1 : geneLen - switchLen));
+                        % childStr2 = append(temStr1(geneLen - switchLen + 1 : geneLen), temStr2(geneLen - switchLen + 1 : geneLen));
                         
                         newStr1 = append(newStr1, childStr1);
                         newStr2 = append(newStr2, childStr2);
@@ -183,15 +186,23 @@ classdef GA
             fprintf('------------------------------\n');
         end
         
+        function show(obj)
+            [~, len] = size(obj.genes);
+            for i = 1 : len
+                fprintf('%f %f\n', obj.genes(i).position(1), obj.genes(i).position(2));
+            end
+        end
+        
         function obj = fit(obj)
             for gen = 1 : obj.maxIter
-                [~, len] = size(obj.genes);
-                obj = obj.sortGene();
-                if len > obj.maxGene
-                    obj = obj.survive();
-                end
                 obj = obj.crossover();
                 obj = obj.mutation();
+                [~, len] = size(obj.genes);
+                if len > obj.maxGene
+                    obj = obj.sortGene();
+                    obj = obj.survive();
+                end
+                fprintf('generation: %d\n', gen);
                 obj = obj.showCurrent();
             end
         end
