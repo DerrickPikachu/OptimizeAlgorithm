@@ -54,16 +54,37 @@ classdef GA
             index = left;
         end
         
+        function obj = sortGene(obj)
+            [~, len] = size(obj.genes);
+            fitnessArr = zeros(1, len);
+            
+            % Save the temporary fitness array
+            for i = 1 : len
+                fitnessArr(i) = obj.genes(i).fitness;
+            end
+            
+            % Sort temporary fitness array first, then use this order for
+            % the genes array
+            [~, I] = sort(fitnessArr, 'descend');
+            obj.genes = obj.genes(I);
+        end
+        
         function obj = survive(obj)
             sum = 0;
             [~, len] = size(obj.genes);
             prefixSum = zeros(1, len);
+            fitnessArr = zeros(1, len);
+            
+            for i = 1 : len
+                fitnessArr(i) = obj.genes(len - i + 1).fitness;
+            end
             
             % Calculate the prefix sum array (by fitness)
             for i = 1 : len
-                sum = sum + obj.genes(i).fitness;
+                sum = sum + fitnessArr(i);
                 prefixSum(i) = sum;
             end
+            
             
             % Calculate the survived genes, and init the survived gene
             % array
@@ -87,7 +108,8 @@ classdef GA
         
         function obj = fit(obj)
             for gen = 1 : obj.maxIter
-                obj = obj.crossover();
+                obj = obj.sortGene();
+                obj = obj.survive();
             end
         end
     end
