@@ -8,8 +8,7 @@ classdef GA
     end
     
     properties(Constant)
-        %initGenes = 10
-        initGenes = 2
+        initGenes = 10
         maxGene = 200;
         maxIter = 500
         crossoverRate = 0.90;
@@ -91,7 +90,8 @@ classdef GA
             
             % Calculate the survived genes, and init the survived gene
             % array
-            survived = floor(len * obj.surviveRate);
+            % survived = floor(len * obj.surviveRate);
+            survived = obj.maxGene;
             survivedGene = Gene.empty(0, survived);
             
             % Shoot and decide the survived gene
@@ -108,8 +108,11 @@ classdef GA
         function obj = crossover(obj)
             [~, len] = size(obj.genes);
             
+            % Crossover each two gene
             for i = 1 : floor(len / 2)
                 cur = 2 * (i - 1) + 1;
+                
+                % When the probability hit, do crossover
                 if (rand <= obj.crossoverRate)
                     switchLen = floor(obj.genes(cur).geneLength / 5);
                     gene1 = obj.genes(cur).geneStr;
@@ -117,6 +120,7 @@ classdef GA
                     newStr1 = '';
                     newStr2 = '';
                     
+                    % For each coordinate value, do gene switch
                     for j = 1 : obj.dimension
                         geneLen = obj.genes(cur).geneLength;
                         front = (j - 1) * geneLen + 1;
@@ -131,20 +135,64 @@ classdef GA
                         newStr2 = append(newStr2, childStr2);
                     end
                     
+                    % Generate new child gene
                     newGene1 = Gene(zeros(1, obj.dimension), obj.boundary, obj.evaluateFunc);
                     newGene2 = Gene(zeros(1, obj.dimension), obj.boundary, obj.evaluateFunc);
                     newGene1 = newGene1.decode(newStr1);
                     newGene2 = newGene2.decode(newStr2);
                     
+                    % Add this two gene into the gene sequence
                     obj.genes = [obj.genes, newGene1, newGene2];
                 end
             end
         end
         
+        function obj = mutation(obj)
+            [~, len] = size(obj.genes);
+            
+            for i = 1 : len
+                if rand <= obj.mutationRate
+                    geneLen = obj.genes(i).geneLength * obj.dimension;
+                    choosed = ceil(rand * geneLen);
+                    gene = obj.genes(i).geneStr;
+                    if gene(choosed) == '1'
+                        gene(choosed) = '0';
+                    else
+                        gene(choosed) = '1';
+                    end
+                    obj.genes(i) = obj.genes(i).decode(gene);
+                end
+            end
+        end
+        
+        function obj = showCurrent(obj)
+            [~, len] = size(obj.genes);
+            sum = 0;
+            best = obj.genes(1).fitness;
+            
+            for i = 1 : len
+                sum = sum + obj.genes(i).fitness;
+                if best > obj.genes(i).fitness
+                    best = obj.genes(i).fitness;
+                end
+            end
+            
+            mean = sum / len;
+            fprintf('mean: %f\n', mean);
+            fprintf('best: %f\n', best);
+            fprintf('------------------------------\n');
+        end
+        
         function obj = fit(obj)
             for gen = 1 : obj.maxIter
+                [~, len] = size(obj.genes);
                 obj = obj.sortGene();
-                obj = obj.survive();
+                if len > obj.maxGene
+                    obj = obj.survive();
+                end
+                obj = obj.crossover();
+                obj = obj.mutation();
+                obj = obj.showCurrent();
             end
         end
     end
