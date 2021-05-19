@@ -8,8 +8,7 @@ classdef GA
     end
     
     properties(Constant)
-        %initGenes = 10
-        initGenes = 2
+        initGenes = 10
         maxGene = 200;
         maxIter = 500
         crossoverRate = 0.90;
@@ -120,21 +119,21 @@ classdef GA
                     for j = 1 : obj.dimension
                         geneLen = obj.genes(cur).geneLength;
                         front = (j - 1) * geneLen + 1;
-                        back = j * geneLen;
+                        back = j * obj.genes(cur);
                         temStr1 = gene1(front : back);
                         temStr2 = gene2(front : back);
                         
                         childStr1 = append(temStr1(1 : geneLen - switchLen), temStr2(geneLen - switchLen + 1 : geneLen));
                         childStr2 = append(temStr2(1 : geneLen - switchLen), temStr1(geneLen - switchLen + 1 : geneLen));
                         
-                        newStr1 = append(newStr1, childStr1);
-                        newStr2 = append(newStr2, childStr2);
+                        newStr1 = append(newStr1 : childStr1);
+                        newStr2 = append(newStr2 : childStr2);
                     end
                     
                     newGene1 = Gene(zeros(1, obj.dimension), obj.boundary, obj.evaluateFunc);
-                    newGene2 = Gene(zeros(1, obj.dimension), obj.boundary, obj.evaluateFunc);
-                    newGene1 = newGene1.decode(newStr1);
-                    newGene2 = newGene2.decode(newStr2);
+                    newGene2 = Gene(zeros(1, obj.dimension), obj.boundary, boj.evaluateFunc);
+                    newGene1.decode(newStr1);
+                    newGene2.decode(newStr2);
                     
                     obj.genes = [obj.genes, newGene1, newGene2];
                 end
