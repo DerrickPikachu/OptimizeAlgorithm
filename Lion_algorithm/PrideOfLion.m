@@ -17,7 +17,7 @@ classdef PrideOfLion
     properties (Constant)
         crossoverCubs = 4
         mutationCubs = 4
-        yearOfMature = 3
+        yearOfMature = 7
         mutationRange = 1
     end
     
@@ -36,9 +36,6 @@ classdef PrideOfLion
             % Let the male and female crossover and bron cubs
             % Before coressover, kill the previous generation first
             
-            % ****************************************
-            % TODO: Change this function to dynamic dimension
-            % ****************************************
             % Bron new cubs
             for i = 1 : obj.crossoverCubs
                 newPos = [0, 0];
@@ -48,14 +45,42 @@ classdef PrideOfLion
                     sample = rand* range - range / 2;
                     newPos(j) = obj.getStrongest() + sample;
                 end
-                obj.cubs(i) = Lion(newPos, obj.fitnessFunc);
+                obj.cubs(i) = Lion(newPos, obj.boundary, obj.fitnessFunc);
+            end
+        end
+        
+        function obj = crossoverBin(obj)
+            for i = 1 : obj.crossoverCubs / 2
+                geneLen = obj.male.geneLength;
+                newStr1 = '';
+                newStr2 = '';
+                maleStr = obj.male.geneStr;
+                femaleStr = obj.female.geneStr;
+                
+                for j = 1 : obj.dimension
+                    base = (j - 1) * geneLen;
+                    switchLen = ceil(rand * floor(geneLen * 3 / 4));
+                    %fprintf('choosed bit: %d\n', switchLen);
+                    
+                    maleSection = maleStr(base + 1 : base + geneLen);
+                    femaleSection = femaleStr(base + 1 : base + geneLen);
+                    
+                    newSection1 = append(maleSection(1 : switchLen), femaleSection(switchLen + 1 : geneLen));
+                    newSection2 = append(femaleSection(1 : switchLen), maleSection(switchLen + 1 : geneLen));
+                    
+                    newStr1 = append(newStr1, newSection1);
+                    newStr2 = append(newStr2, newSection2);
+                end
+                
+                newLion1 = Lion([0, 0], obj.boundary, @evaluateFunc);
+                newLion2 = newLion1.decode(newStr2);
+                newLion1 = newLion1.decode(newStr1);
+                
+                obj.cubs = [obj.cubs, newLion1, newLion2];
             end
         end
         
         function obj = mutation(obj)
-            %range = ((obj.upperBound - obj.lowerBound) / 2) * obj.mutationRange;
-            %bias = range / 2;
-            
             for i = 1 : obj.crossoverCubs
                 % Get the mutation rand number
                 newPos = zeros(1, obj.dimension);
@@ -74,7 +99,28 @@ classdef PrideOfLion
                 end
                 
                 % Bron new cubs
-                obj.cubs(obj.crossoverCubs + i) = Lion(newPos, @evaluateFunc);
+                obj.cubs(obj.crossoverCubs + i) = Lion(newPos, obj.boundary, @evaluateFunc);
+            end
+        end
+        
+        function obj = mutationBin(obj)
+            for i = 1 : obj.crossoverCubs
+                gene = obj.cubs(i).geneStr;
+                choosedBit = ceil(rand * obj.male.geneLength * obj.dimension);
+                %fprintf('choosed: %d\n', choosedBit);
+                %fprintf('%s\n', gene);
+                
+                if gene(choosedBit) == '1'
+                    gene(choosedBit) = '0';
+                else
+                    gene(choosedBit) = '1';
+                end
+                %fprintf('%s\n', gene);
+                
+                cub = Lion([0, 0], obj.boundary, @evaluateFunc);
+                cub = cub.decode(gene);
+                
+                obj.cubs(obj.crossoverCubs + i) = cub;
             end
         end
         
@@ -101,8 +147,10 @@ classdef PrideOfLion
         end
         
         function obj = reproduce(obj)
-            obj = obj.crossover();
-            obj = obj.mutation();
+%             obj = obj.crossover();
+%             obj = obj.mutation();
+            obj = obj.crossoverBin();
+            obj = obj.mutationBin();
             obj = obj.classify();
         end
         

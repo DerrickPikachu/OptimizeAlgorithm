@@ -2,8 +2,6 @@ classdef LionAlgo
     
     properties
         prides
-        %lowerBound
-        %upperBound
         boundary
         dimension
         % call back function
@@ -13,14 +11,12 @@ classdef LionAlgo
     end
     
     properties (Constant)
-        numOfPride = 10
-        maxIter = 150
+        numOfPride = 15
+        maxIter = 300
     end
     
     methods
         function obj = LionAlgo(boundary, dimension, fitness)
-            %obj.lowerBound = lowerBound;
-            %obj.upperBound = upperBound;
             obj.boundary = boundary;
             obj.dimension = dimension;
             obj.fitnessFunc = fitness;
@@ -42,8 +38,8 @@ classdef LionAlgo
                     femalePos(d) = rand * range - bias;
                 end
                 
-                male = Lion(malePos, obj.fitnessFunc);
-                female = Lion(femalePos, obj.fitnessFunc);
+                male = Lion(malePos, obj.boundary, obj.fitnessFunc);
+                female = Lion(femalePos, obj.boundary, obj.fitnessFunc);
                 obj.prides(i) = PrideOfLion(male, female, obj.boundary, obj.dimension, obj.fitnessFunc);
             end
         end
@@ -69,14 +65,10 @@ classdef LionAlgo
                 end
                 
                 % Generate nomad lion and challenge the pride
-                nomad = Lion(nomadPos, obj.fitnessFunc);
+                nomad = Lion(nomadPos, obj.boundary, obj.fitnessFunc);
                 if ~obj.prides(i).fightNomad(nomad)
-                    %fprintf('lose\n');
                     obj.prides(i) = obj.prides(i).occupied(nomad);
-                else
-                    %fprintf('win\n');
                 end
-                %fprintf('-------------------------\n');
             end
         end
         

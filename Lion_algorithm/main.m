@@ -1,9 +1,14 @@
-lionAl = LionAlgo(-600, 600, @evaluateFunc);
-lionAl = lionAl.fit();
-
 boundary = [-600, 600; -600, 600];
+
+tic
+lionAl = LionAlgo(boundary, 2, @evaluateFunc);
+lionAl = lionAl.fit();
+lionTime = toc;
+
+tic
 ga = GA(boundary, 2, @evaluateFunc);
 ga = ga.fit();
+gaTime = toc;
 
 x = 1 : lionAl.maxIter;
 tiledlayout(2, 1)

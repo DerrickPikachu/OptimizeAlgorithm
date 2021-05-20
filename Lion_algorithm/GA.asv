@@ -12,8 +12,8 @@ classdef GA
     properties(Constant)
         initGenes = 10
         maxGene = 100
-        maxIter = 250
-        crossoverRate = 0.80
+        maxIter = 150
+        crossoverRate = 0.70
         mutationRate = 0.50
         surviveRate = 0.80
     end
@@ -24,8 +24,8 @@ classdef GA
             obj.boundary = boundary;
             obj.dimension = dimension;
             obj.evaluateFunc = evaluateFunc;
-            obj.meanArray = zeros(obj.maxIter);
-            obj.bestArray = zeros(obj.maxIter);
+            obj.meanArray = zeros(1, obj.maxIter);
+            obj.bestArray = zeros(1, obj.maxIter);
             
             % Randomly generate genes
             obj.genes = Gene.empty(0, obj.initGenes);
@@ -170,7 +170,6 @@ classdef GA
                     else
                         gene(choosed) = '1';
                     end
-                    
                     obj.genes(i) = obj.genes(i).decode(gene);
                 end
             end
@@ -179,21 +178,22 @@ classdef GA
         function obj = showCurrent(obj, generation)
             [~, len] = size(obj.genes);
             sum = 0;
-            best = obj.genes(1).fitness;
+            best = obj.genes(1);
             
             for i = 1 : len
                 sum = sum + obj.genes(i).fitness;
-                if best > obj.genes(i).fitness
-                    best = obj.genes(i).fitness;
+                if best.fitness > obj.genes(i).fitness
+                    best = obj.genes(i);
                 end
             end
             
             mean = sum / len;
             obj.meanArray(generation) = mean;
-            obj.bestArray(generation) = best;
+            obj.bestArray(generation) = best.fitness;
             
             fprintf('mean: %f\n', mean);
             fprintf('best: %f\n', best);
+            fprintf('best positio
             fprintf('------------------------------\n');
         end
         

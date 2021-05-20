@@ -12,7 +12,7 @@ classdef GA
     properties(Constant)
         initGenes = 10
         maxGene = 100
-        maxIter = 150
+        maxIter = 300
         crossoverRate = 0.70
         mutationRate = 0.50
         surviveRate = 0.80
@@ -178,21 +178,22 @@ classdef GA
         function obj = showCurrent(obj, generation)
             [~, len] = size(obj.genes);
             sum = 0;
-            best = obj.genes(1).fitness;
+            best = obj.genes(1);
             
             for i = 1 : len
                 sum = sum + obj.genes(i).fitness;
-                if best > obj.genes(i).fitness
-                    best = obj.genes(i).fitness;
+                if best.fitness > obj.genes(i).fitness
+                    best = obj.genes(i);
                 end
             end
             
             mean = sum / len;
             obj.meanArray(generation) = mean;
-            obj.bestArray(generation) = best;
+            obj.bestArray(generation) = best.fitness;
             
             fprintf('mean: %f\n', mean);
-            fprintf('best: %f\n', best);
+            fprintf('best: %f\n', best.fitness);
+            fprintf('best position: %f %f\n', best.position(1), best.position(2));
             fprintf('------------------------------\n');
         end
         
