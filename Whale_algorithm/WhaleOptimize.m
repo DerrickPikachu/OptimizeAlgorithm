@@ -57,6 +57,10 @@ classdef WhaleOptimize
             
             bestWhale = obj.whales(bestFitIndex);
         end
+        
+        function obj = fit(obj)
+            
+        end
     end
 end
 

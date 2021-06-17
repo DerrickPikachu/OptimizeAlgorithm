@@ -34,6 +34,30 @@ classdef Whale
                 end
             end
         end
+        
+        function obj = encircleUpdate(obj, bestWhale, a)
+           for i = 1 : obj.dimension
+               best = bestWhale.position(i);
+               A = 2 * a * rand - a;
+               fprintf("%f\n", A);
+               C = 2 * rand;
+               fprintf("%f\n", C);
+               obj.position(i) = best - A * abs(C * best - obj.position(i));
+           end
+           
+           obj.fitness = obj.fitnessFunction(obj.position);
+        end
+        
+        function obj = spiralUpdate(obj, bestWhale)
+            for i = 1 : obj.dimension
+                best = bestWhale.position(i);
+                D = abs(best - obj.position(i));
+                l = rand;
+                obj.position(i) = D * exp(0.5 * l) * cos(2 * pi * l) + best;
+            end
+            
+            obj.fitness = obj.fitnessFunction(obj.position);
+        end
     end
 end
 
