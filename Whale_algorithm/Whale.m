@@ -48,12 +48,12 @@ classdef Whale
            obj.fitness = obj.fitnessFunction(obj.position);
         end
         
-        function obj = spiralUpdate(obj, bestWhale)
+        function obj = spiralUpdate(obj, bestWhale, b)
             for i = 1 : obj.dimension
                 best = bestWhale.position(i);
                 D = abs(best - obj.position(i));
                 l = rand;
-                obj.position(i) = D * exp(0.5 * l) * cos(2 * pi * l) + best;
+                obj.position(i) = D * exp(b * l) * cos(2 * pi * l) + best;
             end
             
             obj.fitness = obj.fitnessFunction(obj.position);

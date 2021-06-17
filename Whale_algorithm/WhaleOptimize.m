@@ -12,6 +12,7 @@ classdef WhaleOptimize
         numOfWhale = 10
         maxIter = 100
         a = 2
+        spiralConstant = 0.5
     end
     
     methods
