@@ -24,9 +24,6 @@ classdef WhaleOptimize
             
             % Whale init
             obj = obj.whaleInit();
-            
-            % Find best one
-            obj.bestWhale = obj.findBest();
         end
         
         function obj = whaleInit(obj)
@@ -44,19 +41,7 @@ classdef WhaleOptimize
             end
         end
         
-        function bestWhale = findBest(obj)
-            bestFitness = obj.whales(1).fitness;
-            bestFitIndex = 1;
-            
-            for i = 1 : obj.numOfWhale
-                if bestFitness > obj.whales(i).fitness
-                    bestFitness = obj.whales(i).fitness;
-                    bestFitIndex = i;
-                end
-            end
-            
-            bestWhale = obj.whales(bestFitIndex);
-        end
+        
     end
 end
 

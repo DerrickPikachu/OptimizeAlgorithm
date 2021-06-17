@@ -1,4 +1,4 @@
-classdef whale
+classdef Whale
     
     properties
         position
@@ -11,7 +11,7 @@ classdef whale
     end
     
     methods
-        function obj = whale(pos, boundary, func)
+        function obj = Whale(pos, boundary, func)
             obj.position = pos;
             obj.boundary = boundary;
             obj.fitnessFunction = func;
